@@ -21,7 +21,9 @@
         </activity>
         <service android:name="com.bobc.trainservice.service.TrainService" 
             android:exported="true">
-            <action android:name="com.bobc.trainservice_TrainService"/>
+            <intent-filter >
+            	<action android:name="com.bobc.trainservice_TrainService"/>
+            </intent-filter>
         </service>
     </application>
 

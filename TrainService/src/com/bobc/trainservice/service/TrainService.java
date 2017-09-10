@@ -50,6 +50,13 @@ public class TrainService extends Service {
 			mClient = client;
 			return true;
 		}
+
+		@Override
+		public boolean unregisterClient() throws RemoteException {
+			// TODO Auto-generated method stub
+			mClient = null;
+			return false;
+		}
 		
 	}
 }

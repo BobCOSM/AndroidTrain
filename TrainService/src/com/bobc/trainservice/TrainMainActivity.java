@@ -95,4 +95,9 @@ public class TrainMainActivity extends Activity {
 			}
 		}
 	};
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		unbindService(sc);
+	}
 }
