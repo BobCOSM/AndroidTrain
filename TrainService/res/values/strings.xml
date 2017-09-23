@@ -2,5 +2,6 @@
 
     <string name="app_name">TrainService</string>
     <string name="show_log">ShowLog</string>
+    <string name="load_image">LoadImage</string>
     
 </resources>
