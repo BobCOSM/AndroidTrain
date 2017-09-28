@@ -1,4 +1,4 @@
-package com.bobc.trainservice.network;
+package com.bob.trainservice.network;
 
 import android.net.NetworkInfo;
 

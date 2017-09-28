@@ -1,8 +1,8 @@
-package com.bobc.trainservice.service;
+package com.bob.trainservice.service;
 
-import com.bobc.trainservice.TrainMainActivity;
-import com.bobc.trainservice.aidl.ITrainServiceClient;
-import com.bobc.trainservice.aidl.ITrainServiceServer;
+import com.bob.trainservice.TrainMainActivity;
+import com.bob.trainservice.aidl.ITrainServiceClient;
+import com.bob.trainservice.aidl.ITrainServiceServer;
 
 import android.app.Service;
 import android.content.Intent;

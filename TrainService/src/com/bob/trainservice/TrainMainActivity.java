@@ -1,10 +1,13 @@
-package com.bobc.trainservice;
+package com.bob.trainservice;
 
 import com.bob.trainservice.R;
-import com.bobc.trainservice.aidl.ITrainServiceClient;
-import com.bobc.trainservice.aidl.ITrainServiceServer;
-import com.bobc.trainservice.network.HttpManager;
-import com.bobc.trainservice.service.TrainService;
+import com.bob.trainservice.network.HttpManager;
+import com.bob.trainservice.network.NetworkParams;
+import com.bob.trainservice.network.SocketProxy;
+import com.bob.trainservice.service.TrainService;
+import com.bob.trainservice.util.JavaJniTrain;
+import com.bob.trainservice.aidl.ITrainServiceClient;
+import com.bob.trainservice.aidl.ITrainServiceServer;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -14,6 +17,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
@@ -30,7 +34,11 @@ public class TrainMainActivity extends Activity {
 	private ITrainServiceServer mTrainServiceServer;
 	private HttpManager mHttpManager = new HttpManager();
 	private ImageView mTestImage;
+	private SocketProxy mSocketProxy;
 	
+	static{
+		System.loadLibrary("TrainService");
+	}
 	
 	private ITrainServiceClient mTrainServiceClient = new ITrainServiceClient.Stub() {
 		
@@ -58,8 +66,10 @@ public class TrainMainActivity extends Activity {
 				mTestImage.setImageBitmap((Bitmap)msg.obj);
 				break;
 			case MSG_PING_STATE:
-				mLog.setText((boolean)msg.obj ? "ok" : "false");
-				Log.d(TAG, " ping state : " + ((boolean)msg.obj ? "ok" : "false"));
+				mLog.setText(((Boolean)msg.obj).booleanValue() ? "ok" : "false");
+				String str = " ping state : " + (((Boolean)msg.obj).booleanValue() ? "ok" : "false");
+				Log.d(TAG, str);
+				Toast.makeText(TrainMainActivity.this, str, Toast.LENGTH_SHORT).show();
 				break;
 			}
 		}
@@ -91,6 +101,8 @@ public class TrainMainActivity extends Activity {
 		Intent service = new Intent(TrainMainActivity.this,TrainService.class);
 		boolean bindRes = bindService(service, sc, BIND_AUTO_CREATE);
 		Toast.makeText(this, "bindRes : " + bindRes, Toast.LENGTH_SHORT).show();
+
+		testHandlerInWorkThread();
 	}
 	
 	private ServiceConnection sc = new ServiceConnection() {
@@ -116,7 +128,75 @@ public class TrainMainActivity extends Activity {
 //	private String urlStr = "http://content.52pk.com/files/100623/2230_102437_1_lit.jpg";
 	private String urlStr = "http://img.zybus.com/uploads/allimg/140523/1-140523155107.jpg";
 	public void onLoadImage(View view){
+		testConn();
+	}
+	
+	private Handler mWorkThreadHandler;
+	
+	private void testNavi(){
+		JavaJniTrain jt = new JavaJniTrain();
+		String str = jt.getString();
+		Log.d(TAG,"str : " + str);
+		mLog.setText(str);
 		
+	}
+	
+	private void sendMsgToWorkThread(){
+		Message msg = new Message();
+		msg.obj = "hello";
+		msg.what = 24;
+		mWorkThreadHandler.sendMessage(msg);
+	}
+	
+	public void onCurTest(View view){
+		//sendMsgToWorkThread();
+		sendMsgBySocket();
+//		testNavi();
+	}
+	
+	private void sendMsgBySocket(){
+		NetworkParams netparams = new NetworkParams("192.168.1.104", 8889);
+		//final SocketProxy socket = new SocketProxy(netparams);
+		if(mSocketProxy == null){
+			mSocketProxy = new SocketProxy(netparams);
+		}
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+
+				mSocketProxy.connect();
+				String data = "hello";
+				
+				mSocketProxy.sendData(data.getBytes(), 0, data.getBytes().length);
+
+				mSocketProxy.recvData();
+			}
+		}).start();
+	}
+	public void onEndConnet(View view){
+		mSocketProxy.closeSocket();
+	}
+	private void testHandlerInWorkThread(){
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Looper.prepare();
+				mWorkThreadHandler = new Handler(){
+					@Override
+					public void handleMessage(Message msg){
+						Log.d("TAG"," in workThread what :" + msg.what + " msg : " + msg.obj.toString());
+					}
+				};
+				Looper.loop();
+			}
+		}).start();
+	}
+	
+	private void testConn(){
 		new Thread(new Runnable() {
 			
 			@Override
@@ -124,7 +204,7 @@ public class TrainMainActivity extends Activity {
 				// TODO Auto-generated method stub
 				boolean isConn = HttpManager.ping();
 				Message msg = mHandler.obtainMessage(MSG_PING_STATE);
-				msg.obj = isConn;
+				msg.obj = new Boolean(isConn);
 				msg.sendToTarget();
 			}
 		}).start();

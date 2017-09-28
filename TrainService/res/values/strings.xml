@@ -3,5 +3,6 @@
     <string name="app_name">TrainService</string>
     <string name="show_log">ShowLog</string>
     <string name="load_image">LoadImage</string>
-    
+    <string name="cur_test">CurTest</string>
+    <string name="end_connet">EndConnet</string>
 </resources>

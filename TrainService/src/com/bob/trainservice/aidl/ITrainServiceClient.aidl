@@ -1,4 +1,4 @@
-package com.bobc.trainservice.aidl;
+package com.bob.trainservice.aidl;
 interface ITrainServiceClient{
 	void showStr(String str);
 }

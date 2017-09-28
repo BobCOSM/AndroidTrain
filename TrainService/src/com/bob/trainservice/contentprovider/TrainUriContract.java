@@ -1,4 +1,4 @@
-package com.bobc.trainservice.contentprovider;
+package com.bob.trainservice.contentprovider;
 
 import android.content.ContentUris;
 import android.net.Uri;

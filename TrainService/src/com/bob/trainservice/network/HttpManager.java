@@ -1,8 +1,10 @@
-package com.bobc.trainservice.network;
+package com.bob.trainservice.network;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,16 +26,17 @@ public class HttpManager {
 		String result = null;
 		try {
 			String ip = "www.baidu.com";
-			Process p = Runtime.getRuntime().exec("ping -w 100 " + ip);
-			BufferedInputStream bufIu = new BufferedInputStream(p.getInputStream());
-			int size = 0;
-			byte[] buffer = new byte[1024];
-			StringBuilder sb = new StringBuilder();
-			while((size = bufIu.read(buffer)) != -1){
-				sb.append(new String(buffer));
-			}
-			Log.d(TAG, " ping result : " + sb.toString());
+			Log.d(TAG, " start ping ");
+			Process p = Runtime.getRuntime().exec("ping -c 1 -w 100 " + ip);
+			BufferedReader bufIu = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+			String str = "";
 			int status = p.waitFor();
+
+			while((str = bufIu.readLine()) != null){
+				Log.d(TAG, " ping result : " + str);
+			}
+			
+			Log.d(TAG, " ping status : " + status);
 			if (status == 0) {
 				return true;
 			}

@@ -20,6 +20,18 @@
 	        android:layout_height="wrap_content"
 	        android:text="@string/load_image"
 	        android:onClick="onLoadImage" />
+	    <Button 
+	        android:id="@+id/cur_test"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/cur_test"
+	        android:onClick="onCurTest" />
+	    <Button
+	        android:id="@+id/end_connet"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/end_connet"
+	        android:onClick="onEndConnet" />
     </LinearLayout>
     
     <ImageView
